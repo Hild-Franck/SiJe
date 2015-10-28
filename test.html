@@ -5,12 +5,15 @@
     <title>SiJe Tests</title>
     <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-    Looped mode :
-    <div class="switch">
-        <input type="checkbox" checked=true />
-        <div class="switch-button on"></div>
-    </div>
+    <section>Looped mode :
+        <div class="switch">
+            <input type="checkbox" checked=true />
+            <div class="switch-button on"></div>
+        </div>
+    </section>
+<section>
+        <button class="reset">Reset looped function</button>
+</section>
     <canvas id="canvas"></canvas>
     <button class="erase">Erase canvas</button>
     <div id="button-container">
@@ -19,22 +22,38 @@
     </div>
 </body>
 <script type="text/javascript">
+    //Functions' objects
+    var counter = {
+        poulet: 0,
+        update: function(){
+            this.poulet++;
+            context.fillText(this.poulet, canvas.width/2, canvas.height/2);
+        },
+        reset: function(){
+            this.poulet = 0;
+        }
+    };
+
     var checkBox = document.getElementsByTagName('input')[0];
     var eraseBtn = document.getElementsByClassName('erase')[0];
+    var resetBtn = document.getElementsByClassName('reset')[0];
+
+    var currFunct = counter;
 
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
-    var poulet = 0;
 
     eraseBtn.addEventListener('click', function(){
         context.clearRect(0, 0, canvas.width, canvas.height);
     });
+    resetBtn.addEventListener('click', function(){
+        currFunct.reset();
+    });
 
     var intervall = setInterval(function(){
         if(checkBox.checked){
-            poulet++;
             context.clearRect(0, 0, canvas.width, canvas.height);
-            context.fillText(poulet, canvas.width/2, canvas.height/2);
+            currFunct.update();
         }
     }, 60);
 </script>

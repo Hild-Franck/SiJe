@@ -21,6 +21,10 @@ button{
     cursor: pointer;
 }
 
+button:hover{
+    background: #3498DB;
+}
+
 button.erase{
     background: #D91E18;
     margin: 10px auto;
@@ -31,8 +35,15 @@ button.erase:hover{
     background: #EF4836;
 }
 
-button:hover{
-    background: #3498DB;
+button.reset{
+    background: #D91E18;
+    vertical-align: middle;
+    font-size: 15px;
+    margin-top: 15px;
+}
+
+button.reset:hover{
+    background: #EF4836;
 }
 #button-container{
     padding: 15px 20% 15px 20%;
