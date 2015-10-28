@@ -54,8 +54,8 @@ input[type="checkbox"]{
     width: 100%;
     margin: 0;
     position: absolute;
-    top: 0px;
-    left: 0px;
+    top: 0;
+    left: 0;
     opacity: 0;
     z-index: 2;
     cursor: pointer;
@@ -76,19 +76,48 @@ input[type="checkbox"]{
     width: 50%;
     background-color: royalblue;
     height: 100%;
-    border: 0px royalblue solid;
+    border: 0 royalblue solid;
     border-radius: 4px;
 }
 
 input[type="checkbox"]:not(:checked) ~ .switch-button{
     -moz-transition: -moz-transform 0.5s, background-color 0.5s;
+    -webkit-transition: -webkit-transform 0.5s, background-color 0.5s;
     background-color: grey;
     -moz-transform: translateX(35px);
+    -webkit-transform: translateX(35px);
 }
 
 
 input[type="checkbox"]:checked ~ .switch-button{
     -moz-transition: -moz-transform 0.5s, background-color 0.5s;
+    -webkit-transition: -webkit-transform 0.5s, background-color 0.5s;
     background-color: royalblue;
     -moz-transform: translateX(0px);
+    -webkit-transform: translateX(0px);
+}
+
+#monitoring{
+    position: absolute;
+    right: 0;
+    padding: 10px;
+    color: white;
+    min-height: 100px;
+    background: royalblue;
+    border: 1px royalblue solid;
+    border-radius: 4px;
+}
+#monitoring > p{
+    font-size: 20px;
+    margin: 0;
+}
+#monitoring > section{
+    background: #59ABE3;
+    border: 1px solid #59ABE3;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+#monitoring > section > p{
+    margin: 0;
 }

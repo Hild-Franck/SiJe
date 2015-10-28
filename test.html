@@ -5,25 +5,35 @@
     <title>SiJe Tests</title>
     <link rel="stylesheet" href="style.css" />
 </head>
+<body>
     <section>Looped mode :
         <div class="switch">
-            <input type="checkbox" checked=true />
+            <input type="checkbox" checked />
             <div class="switch-button on"></div>
         </div>
     </section>
-<section>
+    <section>
         <button class="reset">Reset looped function</button>
-</section>
+    </section>
+    <section id="monitoring">
+        <p>Information</p>
+        <section>
+            <p>Loop: <span id="loop-state">ON</span></p>
+            <p>Number of reset: <span id="number-reset">0</span></p>
+            <p>Current looped function: <span id="looped-function"></span></p>
+        </section>
+    </section>
     <canvas id="canvas"></canvas>
     <button class="erase">Erase canvas</button>
     <div id="button-container">
-        <button>Test</button>
+        <button>Counter</button>
         <button>Test2</button>
     </div>
 </body>
 <script type="text/javascript">
     //Functions' objects
     var counter = {
+        name: "counter",
         poulet: 0,
         update: function(){
             this.poulet++;
@@ -37,8 +47,13 @@
     var checkBox = document.getElementsByTagName('input')[0];
     var eraseBtn = document.getElementsByClassName('erase')[0];
     var resetBtn = document.getElementsByClassName('reset')[0];
+    var spanLoopState = document.getElementById('loop-state');
+    var spanNbrReset = document.getElementById('number-reset');
+    var spanLoopedFunction = document.getElementById('looped-function');
 
     var currFunct = counter;
+
+    spanLoopedFunction.textContent = currFunct.name + "()";
 
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
@@ -48,13 +63,17 @@
     });
     resetBtn.addEventListener('click', function(){
         currFunct.reset();
+        spanNbrReset.textContent = parseInt(spanNbrReset.textContent) + 1;
     });
 
     var intervall = setInterval(function(){
         if(checkBox.checked){
+            spanLoopState.textContent = "ON";
             context.clearRect(0, 0, canvas.width, canvas.height);
             currFunct.update();
         }
+        else
+            spanLoopState.textContent = "OFF";
     }, 60);
 </script>
 </html>
