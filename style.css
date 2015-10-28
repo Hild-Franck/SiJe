@@ -1,0 +1,83 @@
+html{
+    font-family: sans-serif;
+    font-weight: bold;
+}
+#canvas{
+    width: 500px;
+    height: 500px;
+    border: 1px black solid;
+    display: block;
+    margin: auto;
+}
+button{
+    background: royalblue;
+    border: royalblue;
+    border-radius: 3px;
+    padding: 5px 10px 5px 10px;
+    color: white;
+    margin: 0 10px 0 10px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button.erase{
+    background: #D91E18;
+    margin: 10px auto;
+    display: block;
+}
+
+button.erase:hover{
+    background: #EF4836;
+}
+
+button:hover{
+    background: #3498DB;
+}
+#button-container{
+    padding: 15px 20% 15px 20%;
+}
+
+input[type="checkbox"]{
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    opacity: 0;
+    z-index: 2;
+    cursor: pointer;
+}
+
+.switch{
+    position: relative;
+    left: 0;
+    width: 70px;
+    border: 1px solid grey;
+    border-radius: 4px;
+    height: 25px;
+    padding: 2px;
+    display: inline-block;
+    vertical-align: middle;
+}
+.switch-button{
+    width: 50%;
+    background-color: royalblue;
+    height: 100%;
+    border: 0px royalblue solid;
+    border-radius: 4px;
+}
+
+input[type="checkbox"]:not(:checked) ~ .switch-button{
+    -moz-transition: -moz-transform 0.5s, background-color 0.5s;
+    background-color: grey;
+    -moz-transform: translateX(35px);
+}
+
+
+input[type="checkbox"]:checked ~ .switch-button{
+    -moz-transition: -moz-transform 0.5s, background-color 0.5s;
+    background-color: royalblue;
+    -moz-transform: translateX(0px);
+}

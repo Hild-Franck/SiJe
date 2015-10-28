@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SiJe Tests</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    Looped mode :
+    <div class="switch">
+        <input type="checkbox" checked=true />
+        <div class="switch-button on"></div>
+    </div>
+    <canvas id="canvas"></canvas>
+    <button class="erase">Erase canvas</button>
+    <div id="button-container">
+        <button>Test</button>
+        <button>Test2</button>
+    </div>
+</body>
+<script type="text/javascript">
+    var checkBox = document.getElementsByTagName('input')[0];
+    var eraseBtn = document.getElementsByClassName('erase')[0];
+
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+    var poulet = 0;
+
+    eraseBtn.addEventListener('click', function(){
+        context.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    var intervall = setInterval(function(){
+        if(checkBox.checked){
+            poulet++;
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.fillText(poulet, canvas.width/2, canvas.height/2);
+        }
+    }, 60);
+</script>
+</html>
