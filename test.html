@@ -6,21 +6,28 @@
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <section>Looped mode :
-        <div class="switch">
-            <input type="checkbox" checked />
-            <div class="switch-button on"></div>
-        </div>
-    </section>
-    <section>
-        <button class="reset">Reset looped function</button>
-    </section>
+    <div id="loop-settings">
+        <section>Looped mode :
+            <div class="switch">
+                <input type="checkbox" checked />
+                <div class="switch-button on"></div>
+            </div>
+        </section>
+        <section>
+            <button class="reset">Reset looped function</button>
+        </section>
+        <section id="range">
+            <input class="text-button" type="text" value="100" />
+            <input class="range-button" type="range" />
+        </section>
+    </div>
     <section id="monitoring">
         <p>Information</p>
         <section>
             <p>Loop: <span id="loop-state">ON</span></p>
             <p>Number of reset: <span id="number-reset">0</span></p>
             <p>Current looped function: <span id="looped-function"></span></p>
+            <p>Frame per second: <span id="fps">0</span> </p>
         </section>
     </section>
     <canvas id="canvas"></canvas>
@@ -32,6 +39,7 @@
 </body>
 <script type="text/javascript">
     //Functions' objects
+    var fps = 100;
     var counter = {
         name: "counter",
         poulet: 0,
@@ -43,13 +51,38 @@
             this.poulet = 0;
         }
     };
+    var monitor ={
+        currTime: 0,
+        arrTime: [],
+        sumTime: 0,
+        getTime: function(){
+            this.sumTime = 0;
+            if(this.currTime != 0) {
+                if(this.arrTime.length >= 10)
+                    this.arrTime.shift();
+                this.arrTime.push((new Date()).getTime() - this.currTime);
+                for(var i = 0; i < this.arrTime.length; i++){
+                    this.sumTime += this.arrTime[i];
+                }
+                this.currTime = (new Date()).getTime();
+                return (this.sumTime / i);
+            }
+            else {
+                this.currTime = (new Date()).getTime();
+                return 0;
+            }
+        }
+    };
 
     var checkBox = document.getElementsByTagName('input')[0];
     var eraseBtn = document.getElementsByClassName('erase')[0];
     var resetBtn = document.getElementsByClassName('reset')[0];
+    var rangeBtn = document.getElementsByClassName('range-button')[0];
+    var textBtn = document.getElementsByClassName('text-button')[0];
     var spanLoopState = document.getElementById('loop-state');
     var spanNbrReset = document.getElementById('number-reset');
     var spanLoopedFunction = document.getElementById('looped-function');
+    var spanFPS = document.getElementById('fps');
 
     var currFunct = counter;
 
@@ -65,15 +98,24 @@
         currFunct.reset();
         spanNbrReset.textContent = parseInt(spanNbrReset.textContent) + 1;
     });
+    rangeBtn.addEventListener('input', function(){
+        fps = this.value;
+        textBtn.value= this.value;
 
-    var intervall = setInterval(function(){
+
+    });
+    var intervalFunction = function(){
         if(checkBox.checked){
+            spanFPS.textContent = monitor.getTime();
             spanLoopState.textContent = "ON";
             context.clearRect(0, 0, canvas.width, canvas.height);
             currFunct.update();
         }
         else
             spanLoopState.textContent = "OFF";
-    }, 60);
+        clearInterval(interval);
+        interval = setInterval(intervalFunction, 1000/fps);
+    };
+    var interval = setInterval(intervalFunction, 1000/fps);
 </script>
 </html>

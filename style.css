@@ -15,7 +15,6 @@ button{
     border-radius: 3px;
     padding: 5px 10px 5px 10px;
     color: white;
-    margin: 0 10px 0 10px;
     font-size: 20px;
     font-weight: bold;
     cursor: pointer;
@@ -120,4 +119,22 @@ input[type="checkbox"]:checked ~ .switch-button{
 
 #monitoring > section > p{
     margin: 0;
+}
+
+#range{
+    display: inline-block;
+}
+
+#loop-settings > section{
+    margin-bottom: 10px;
+}
+
+#loop-settings > section > input[type='text']{
+    display: block;
+    margin: auto;
+    width: 30px;
+}
+
+#range{
+    display: inline-block;
 }
