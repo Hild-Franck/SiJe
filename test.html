@@ -17,7 +17,7 @@
             <button class="reset">Reset looped function</button>
         </section>
         <section id="range">
-            <input class="text-button" type="text" value="100" />
+            <input class="text-button" type="number" value="100" />
             <input class="range-button" type="range" />
         </section>
     </div>
@@ -39,18 +39,36 @@
 </body>
 <script type="text/javascript">
     //Functions' objects
-    var fps = 100;
-    var counter = {
-        name: "counter",
-        poulet: 0,
-        update: function(){
-            this.poulet++;
-            context.fillText(this.poulet, canvas.width/2, canvas.height/2);
-        },
-        reset: function(){
-            this.poulet = 0;
-        }
+    String.prototype.upperCaseFrstLetr = function(){
+        return this.charAt(0).toUpperCase() + this.slice(1);
     };
+
+    var fps = 100;
+    var functions = {
+        counter: {
+            name: "counter",
+            poulet: 0,
+            update: function () {
+                this.poulet++;
+                context.fillText(this.poulet, canvas.width / 2, canvas.height / 2);
+            },
+            reset: function () {
+                this.poulet = 0;
+            }
+        },
+        poulet:{name: 'poulet'}
+    };
+    for(prop in functions){
+        var button = document.createElement('button');
+        button.textContent = functions[prop].name.upperCaseFrstLetr();
+        document.getElementById('button-container').appendChild(button);
+        var fun = functions['counter'];
+        button.addEventListener('click', function(){
+            currFunct = functions.counter;
+            console.log(currFunct);
+        });
+    }
+
     var monitor ={
         currTime: 0,
         arrTime: [],
@@ -60,7 +78,7 @@
             if(this.currTime != 0) {
                 if(this.arrTime.length >= 10)
                     this.arrTime.shift();
-                this.arrTime.push((new Date()).getTime() - this.currTime);
+                this.arrTime.push(Math.ceil(1000/((new Date()).getTime() - this.currTime)));
                 for(var i = 0; i < this.arrTime.length; i++){
                     this.sumTime += this.arrTime[i];
                 }
@@ -84,9 +102,10 @@
     var spanLoopedFunction = document.getElementById('looped-function');
     var spanFPS = document.getElementById('fps');
 
-    var currFunct = counter;
+    var currFunct = null;
 
-    spanLoopedFunction.textContent = currFunct.name + "()";
+    //spanLoopedFunction.textContent = currFunct.name + "()";
+    rangeBtn.value = fps;
 
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
@@ -104,12 +123,18 @@
 
 
     });
+    textBtn.addEventListener('input', function(){
+        rangeBtn.value = this.value;
+        fps = this.value;
+    });
     var intervalFunction = function(){
+        console.log('poulet');
         if(checkBox.checked){
             spanFPS.textContent = monitor.getTime();
             spanLoopState.textContent = "ON";
             context.clearRect(0, 0, canvas.width, canvas.height);
-            currFunct.update();
+            if(currFunct.update)
+                currFunct.update();
         }
         else
             spanLoopState.textContent = "OFF";
