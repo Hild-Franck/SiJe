@@ -16,9 +16,8 @@
         <section>
             <button class="reset">Reset looped function</button>
         </section>
-        <section id="range">
-            <input class="text-button" type="number" value="100" />
-            <input class="range-button" type="range" />
+        <section>
+            <canvas id="fps-control"></canvas>
         </section>
     </div>
     <section id="monitoring">
@@ -29,42 +28,52 @@
             <p>Current looped function: <span id="looped-function"></span></p>
             <p>Frame per second: <span id="fps">0</span> </p>
         </section>
+        <p>Variables</p>
+        <section id="variables">
+
+        </section>
     </section>
     <canvas id="canvas"></canvas>
     <button class="erase">Erase canvas</button>
     <div id="button-container">
-        <button>Counter</button>
-        <button>Test2</button>
     </div>
 </body>
+<script type="text/javascript" src="SiJe.js"></script>
 <script type="text/javascript">
     //Functions' objects
     String.prototype.upperCaseFrstLetr = function(){
         return this.charAt(0).toUpperCase() + this.slice(1);
     };
+    String.prototype.lowerCaseFrstLetr = function(){
+        return this.charAt(0).toLowerCase() + this.slice(1);
+    };
 
     var fps = 100;
+    var mouseX = 0;
+    var mouseY = 0;
+    var angle = 0;
     var functions = {
         counter: {
             name: "counter",
             poulet: 0,
             update: function () {
+                context.font = "30px sans-serif";
                 this.poulet++;
                 context.fillText(this.poulet, canvas.width / 2, canvas.height / 2);
             },
             reset: function () {
                 this.poulet = 0;
             }
-        },
-        poulet:{name: 'poulet'}
+        }
     };
+
     for(prop in functions){
         var button = document.createElement('button');
         button.textContent = functions[prop].name.upperCaseFrstLetr();
         document.getElementById('button-container').appendChild(button);
-        var fun = functions['counter'];
         button.addEventListener('click', function(){
-            currFunct = functions.counter;
+            currFunct = functions[this.textContent.lowerCaseFrstLetr()];
+            currFunct.reset();
             console.log(currFunct);
         });
     }
@@ -95,20 +104,55 @@
     var checkBox = document.getElementsByTagName('input')[0];
     var eraseBtn = document.getElementsByClassName('erase')[0];
     var resetBtn = document.getElementsByClassName('reset')[0];
-    var rangeBtn = document.getElementsByClassName('range-button')[0];
-    var textBtn = document.getElementsByClassName('text-button')[0];
     var spanLoopState = document.getElementById('loop-state');
     var spanNbrReset = document.getElementById('number-reset');
     var spanLoopedFunction = document.getElementById('looped-function');
     var spanFPS = document.getElementById('fps');
 
-    var currFunct = null;
+    var currFunct = {};
 
     //spanLoopedFunction.textContent = currFunct.name + "()";
-    rangeBtn.value = fps;
 
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
+    var FPSContoller = document.getElementById('fps-control');
+    var contextFPSCtrl = FPSContoller.getContext('2d');
+
+    canvas.width = 300;
+    canvas.height = 300;
+    FPSContoller.width = 60;
+    FPSContoller.height = 60;
+    FPSContoller.complete = 0;
+    FPSContoller.clicked = false;
+    FPSContoller.wheelUpdt = function(xPos, yPos){
+        contextFPSCtrl.clearRect(0, 0, this.width, this.height);
+        contextFPSCtrl.strokeStyle = 'grey';
+        contextFPSCtrl.beginPath();
+        contextFPSCtrl.arc(this.width / 2, this.height / 2, 20,  0, Math.PI * 2, true);
+        contextFPSCtrl.stroke();
+        contextFPSCtrl.strokeStyle = 'royalblue';
+
+        if (xPos != -2 && xPos != this.width)
+            mouseX = xPos;
+        if (yPos != -2 && yPos != this.height)
+            mouseY = yPos;
+        angle = (Math.atan2((this.width / 2 - xPos), (this.height / 2 - yPos)) * -1)/* + Math.PI * 1.5*/;
+        if (angle < 0)
+            this.complete = Math.PI + (Math.PI + angle);
+        else
+            this.complete = angle;
+        this.complete = this.complete / (Math.PI * 2) * 100;
+        fps = this.complete;
+        contextFPSCtrl.fillText(Math.round(this.complete), this.width / 2, this.height / 2);
+        contextFPSCtrl.beginPath();
+        contextFPSCtrl.arc(this.width / 2, this.height / 2, 20, angle + Math.PI * 1.5, Math.PI * 1.5, true);
+        contextFPSCtrl.stroke();
+    };
+    contextFPSCtrl.lineWidth = 20;
+    contextFPSCtrl.font = "bold 10px sans-serif";
+    contextFPSCtrl.textAlign = 'center';
+    contextFPSCtrl.textBaseline= "middle";
+    FPSContoller.wheelUpdt(15, 45);
 
     eraseBtn.addEventListener('click', function(){
         context.clearRect(0, 0, canvas.width, canvas.height);
@@ -117,23 +161,29 @@
         currFunct.reset();
         spanNbrReset.textContent = parseInt(spanNbrReset.textContent) + 1;
     });
-    rangeBtn.addEventListener('input', function(){
-        fps = this.value;
-        textBtn.value= this.value;
-
-
+    FPSContoller.addEventListener('mousedown', function(event){
+        event.preventDefault();
+        this.clicked = true;
+        var xPos = (Math.ceil(event.x + document.getElementsByTagName('body')[0].scrollLeft)) - this.offsetLeft;
+        var yPos = (Math.ceil(event.y + document.getElementsByTagName('body')[0].scrollTop)) - this.offsetTop;
+        this.wheelUpdt(xPos, yPos);
     });
-    textBtn.addEventListener('input', function(){
-        rangeBtn.value = this.value;
-        fps = this.value;
+    document.addEventListener('mouseup', function(){FPSContoller.clicked = false;});
+    FPSContoller.addEventListener('mousemove', function(event){
+        if(this.clicked) {
+            var xPos = (Math.ceil(event.x + document.getElementsByTagName('body')[0].scrollLeft)) - this.offsetLeft;
+            var yPos = (Math.ceil(event.y + document.getElementsByTagName('body')[0].scrollTop)) - this.offsetTop;
+            if (!(yPos < this.height / 2 && (xPos >= this.width / 2 && mouseX < this.width / 2))) {
+                this.wheelUpdt(xPos, yPos);
+            }
+        }
     });
     var intervalFunction = function(){
-        console.log('poulet');
         if(checkBox.checked){
             spanFPS.textContent = monitor.getTime();
             spanLoopState.textContent = "ON";
             context.clearRect(0, 0, canvas.width, canvas.height);
-            if(currFunct.update)
+            if(currFunct.hasOwnProperty('update'))
                 currFunct.update();
         }
         else
