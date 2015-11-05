@@ -18,6 +18,7 @@
         </section>
         <section>
             <canvas id="fps-control"></canvas>
+            <p>FPS Control</p>
         </section>
     </div>
     <section id="monitoring">
@@ -120,15 +121,15 @@
 
     canvas.width = 300;
     canvas.height = 300;
-    FPSContoller.width = 60;
-    FPSContoller.height = 60;
+    FPSContoller.width = 100;
+    FPSContoller.height = 100;
     FPSContoller.complete = 0;
     FPSContoller.clicked = false;
     FPSContoller.wheelUpdt = function(xPos, yPos){
         contextFPSCtrl.clearRect(0, 0, this.width, this.height);
         contextFPSCtrl.strokeStyle = 'grey';
         contextFPSCtrl.beginPath();
-        contextFPSCtrl.arc(this.width / 2, this.height / 2, 20,  0, Math.PI * 2, true);
+        contextFPSCtrl.arc(this.width / 2, this.height / 2, 30,  0, Math.PI * 2, true);
         contextFPSCtrl.stroke();
         contextFPSCtrl.strokeStyle = 'royalblue';
 
@@ -145,11 +146,11 @@
         fps = this.complete;
         contextFPSCtrl.fillText(Math.round(this.complete), this.width / 2, this.height / 2);
         contextFPSCtrl.beginPath();
-        contextFPSCtrl.arc(this.width / 2, this.height / 2, 20, angle + Math.PI * 1.5, Math.PI * 1.5, true);
+        contextFPSCtrl.arc(this.width / 2, this.height / 2, 30, angle + Math.PI * 1.5, Math.PI * 1.5, true);
         contextFPSCtrl.stroke();
     };
     contextFPSCtrl.lineWidth = 20;
-    contextFPSCtrl.font = "bold 10px sans-serif";
+    contextFPSCtrl.font = "bold 20px sans-serif";
     contextFPSCtrl.textAlign = 'center';
     contextFPSCtrl.textBaseline= "middle";
     FPSContoller.wheelUpdt(15, 45);
@@ -176,6 +177,8 @@
             if (!(yPos < this.height / 2 && (xPos >= this.width / 2 && mouseX < this.width / 2))) {
                 this.wheelUpdt(xPos, yPos);
             }
+            else
+                this.wheelUpdt(this.width/2 - 1, 0);
         }
     });
     var intervalFunction = function(){

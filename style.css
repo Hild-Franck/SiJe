@@ -2,6 +2,9 @@ html{
     font-family: sans-serif;
     font-weight: bold;
 }
+p{
+    margin: 0;
+}
 #canvas{
     border: 1px black solid;
     display: block;
@@ -120,12 +123,14 @@ input[type="checkbox"]:checked ~ .switch-button{
     margin: 0;
 }
 
-#range{
+#loop-settings{
     display: inline-block;
+    position: absolute;
 }
 
 #loop-settings > section{
     margin-bottom: 10px;
+    text-align: center;
 }
 
 #loop-settings > section > input[type='text']{
