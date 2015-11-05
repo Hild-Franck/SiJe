@@ -2,6 +2,18 @@
  * Created by Knaufux on 11/3/2015.
  */
 
+function clearCanvas(context, canvas){
+    context.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function Var(_value, callback){
+    var value = _value;
+    return {
+        getValue: function(){return value;},
+        setValue: function(nwValue){ value = nwValue; callback(value)}
+    }
+}
+
 function Square(_x, _y, _side, _color, _filled, _width){
     this.x = _x;
     this.y = _y;
@@ -45,6 +57,34 @@ Arc.prototype.draw = function(context){
     context.arc(this.x, this.y, this.radius, this.angleStart, this.angleEnd, true);
     if(this.filled){
         context.lineWidth = this.width;
+        context.strokeStyle = this.color;
+        context.stroke();
+    }
+    else {
+        context.fillStyle = this.color;
+        context.fill();
+    }
+};
+
+function Rectangle(_x, _y, _width, _height, _color, _filled, _weight){
+    this.x = _x;
+    this.y = _y;
+    this.width = _width;
+    this.height = _height;
+    this.color = _color || "black";
+    this.filled = _filled || false;
+    this.weight = _weight || 1;
+}
+
+Rectangle.prototype.area = function(){
+    return (this.width * this.height);
+};
+
+Rectangle.prototype.draw = function(context){
+    context.beginPath();
+    context.rect(this.x - this.width/2, this.y - this.height/2, this.width, this.height);
+    if(this.filled){
+        context.lineWidth = this.weight;
         context.strokeStyle = this.color;
         context.stroke();
     }
