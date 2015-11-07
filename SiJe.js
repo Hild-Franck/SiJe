@@ -6,6 +6,24 @@ function clearCanvas(context, canvas){
     context.clearRect(0, 0, canvas.width, canvas.height);
 }
 
+function ColorRGB(_red, _green, _blue, _alpha){
+    this.red = _red;
+    this.green = _green;
+    this.blue = _blue;
+    this.alpha = _alpha;
+}
+ColorRGB.prototype.toHex = function(){
+    return new ColorHex(this.red.toString(16) + this.green.toString(16) + this.blue.toString(16), this.alpha);
+};
+
+function ColorHex(_hex, _alpha){
+    this.hex = _hex;
+    this.alpha = _alpha;
+}
+ColorHex.prototype.toDec = function(){
+    return new ColorRGB(parseInt(this.hex.splice(0,3), 16), parseInt(this.hex.splice(3,6), 16), parseInt(this.hex.splice(6,9), 16), this.alpha);
+};
+
 function Var(_value, callback){
     var value = _value;
     return {
