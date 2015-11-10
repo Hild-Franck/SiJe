@@ -41,6 +41,82 @@
 </body>
 <script type="text/javascript" src="SiJe.js"></script>
 <script type="text/javascript">
+    Image.prototype.tintImg = function(color, xStart, yStart, width, height){
+        xStart = xStart || 0;
+        yStart = yStart || 0;
+        width = width || 32;
+        height = height || 32;
+        var colorRatio = 255/(color.red + color.green + color.blue);
+        var tintCanvas = document.createElement('canvas');
+        tintCanvas.width = width;
+        tintCanvas.height = height;
+        var tintContext = tintCanvas.getContext('2d');
+        tintContext.drawImage(this, xStart, yStart, width, height, 0, 0, width, height);
+        var pixelData = tintContext.getImageData(0, 0, width, height);
+
+        for(var j = 0; j < height*width*4; j+=width*4) {
+            for (var i = 0; i < width * 4; i += 4) {
+                pixelData.data[i+j] += colorRatio*color.red;
+                pixelData.data[i+j+1] += colorRatio*color.green;
+                pixelData.data[i+j+2] += colorRatio*color.blue;
+            }
+        }
+        tintContext.putImageData(pixelData,0,0);
+
+        return tintCanvas.toDataURL();
+
+    };
+
+    function Sprite(imgPath, _width, _height, _sprite, _nbrFrame, _xSpot, _ySpot){
+        this.image = new Image();
+        this.tintImage = new Image();
+        this.image.src = imgPath;
+        this.frameInd = 1;
+        this.animInd = _sprite;
+        this.nbrFrame = _nbrFrame || this.image.width / 32;
+        this.frame = 0;
+        this.width = _width;
+        this.height = _height;
+        this.xSpot = _xSpot || Math.floor(this.width/2);
+        this.ySpot = _ySpot || Math.floor(this.height/2);
+        this.isTint = true;
+    }
+
+    function Entity(){
+        this.sprite = new Sprite('resources/graphic/spritesheet_example.png', 32, 32, 0, 3);
+        this.x = 150;
+        this.y = 150;
+        this.countDraw = 0;
+    }
+    Entity.prototype.draw = function(sprite, sprIndX, sprIndY){
+        context.drawImage(sprite.image,  sprIndX * 32 , sprIndY * 32, 32, 32, this.x - sprite.xSpot, this.y - sprite.ySpot, 32, 32);
+    };
+
+    Entity.prototype.animate = function(sprite, animSpeed){
+        animSpeed = animSpeed || 1;
+        if(!(sprite.isTint))
+            this.draw(sprite, sprite.frame + 3 * sprite.frameInd, sprite.animInd, this.x, this.y);
+        else{
+            this.sprite.tintImage.src = this.sprite.image.tintImg(new ColorRGB(255, 0, 0), (sprite.frame + 3 * sprite.frameInd)*32, sprite.animInd*32);
+            context.drawImage(sprite.tintImage, 0, 0, 32, 32, this.x - sprite.xSpot, this.y - sprite.ySpot, 32, 32);
+
+        }
+        this.countDraw++;
+
+        if (this.countDraw >= Math.round((fps/sprite.nbrFrame)/animSpeed) * sprite.nbrFrame)
+            this.countDraw = 0;
+        if (this.countDraw % Math.round((fps/sprite.nbrFrame) / animSpeed) == 0)
+            sprite.frame++;
+        if (sprite.frame >= sprite.nbrFrame)
+            sprite.frame = 0;
+
+        /*if((this.frame - (this.spriteSheet.width / 32) * this.sprInd) >= this.spriteSheet.width / 32 && ind == 3) {
+            this.sprInd += 1;
+        }*/
+    };
+
+</script>
+<script type="text/javascript">
     //Functions' objects
     String.prototype.upperCaseFrstLetr = function(){
         return this.charAt(0).toUpperCase() + this.slice(1);
@@ -80,6 +156,16 @@
                 this.shape.draw(context);
             },
             reset: function(){}
+        },
+        tint:{
+            name: "tint",
+            entity: new Entity(),
+            update: function(){
+                this.entity.animate(this.entity.sprite, 1);
+            },
+            reset: function(){
+
+            }
         }
     };
 
@@ -195,12 +281,16 @@
         }
     });
     var intervalFunction = function(){
-        if(checkBox.checked){
+        if(checkBox.checked) {
             spanFPS.textContent = monitor.getTime();
             spanLoopState.textContent = "ON";
             context.clearRect(0, 0, canvas.width, canvas.height);
-            if(currFunct.hasOwnProperty('update'))
+            if (currFunct.hasOwnProperty('update')) {
+                var befTime = (new Date()).getTime();
                 currFunct.update();
+                var aftTime = (new Date()).getTime();
+                console.log('Processing time: ' + (aftTime - befTime));
+            }
         }
         else
             spanLoopState.textContent = "OFF";
