@@ -71,25 +71,27 @@
         this.image = new Image();
         this.tintImage = new Image();
         this.image.src = imgPath;
-        this.frameInd = 1;
-        this.animInd = _sprite;
+        this.frameInd = _sprite;
+        this.animInd = 0;
         this.nbrFrame = _nbrFrame || this.image.width / 32;
         this.frame = 0;
         this.width = _width;
         this.height = _height;
+        this.widthMod = 1;
+        this.heightMod = 1;
         this.xSpot = _xSpot || Math.floor(this.width/2);
         this.ySpot = _ySpot || Math.floor(this.height/2);
         this.isTint = true;
     }
 
     function Entity(){
-        this.sprite = new Sprite('resources/graphic/spritesheet_example.png', 32, 32, 0, 3);
+        this.sprite = new Sprite('resources/graphic/spritesheet_example.png', 32, 32, 1, 3);
         this.x = 150;
         this.y = 150;
         this.countDraw = 0;
     }
     Entity.prototype.draw = function(sprite, sprIndX, sprIndY){
-        context.drawImage(sprite.image,  sprIndX * 32 , sprIndY * 32, 32, 32, this.x - sprite.xSpot, this.y - sprite.ySpot, 32, 32);
+        context.drawImage(sprite.image,  sprIndX * 32 , sprIndY * 32, 32, 32, this.x - sprite.xSpot * sprite.widthMod, this.y - sprite.ySpot * (1/sprite.widthMod), 32 * sprite.widthMod, 32 * sprite.heightMod);
     };
 
     Entity.prototype.animate = function(sprite, animSpeed){
@@ -98,7 +100,7 @@
             this.draw(sprite, sprite.frame + 3 * sprite.frameInd, sprite.animInd, this.x, this.y);
         else{
             this.sprite.tintImage.src = this.sprite.image.tintImg(new ColorRGB(255, 0, 0), (sprite.frame + 3 * sprite.frameInd)*32, sprite.animInd*32);
-            context.drawImage(sprite.tintImage, 0, 0, 32, 32, this.x - sprite.xSpot, this.y - sprite.ySpot, 32, 32);
+            context.drawImage(sprite.tintImage, 0, 0, 32, 32, this.x - sprite.xSpot * sprite.widthMod, this.y - sprite.ySpot * (1/sprite.widthMod), 32 * sprite.widthMod, 32);
 
         }
         this.countDraw++;
@@ -161,10 +163,127 @@
             name: "tint",
             entity: new Entity(),
             update: function(){
+                if(this.entity.sprite.widthMod > 0)
+                    this.entity.sprite.widthMod -= 0.02;
                 this.entity.animate(this.entity.sprite, 1);
             },
             reset: function(){
+                this.entity.sprite.widthMod = 1;
+            }
+        },
+        text: {
+            name: "text",
+            text: "poulewe a gagné un level !",
+            size: 10,
+            isStatic: true,
+            opacity: 1,
+            yOffset: 0,
+            x: 100,
+            y: 100,
+            persistence: true,
+            counterPersistence: 0,
 
+            writeText: function (text, x, y, color, opacity, size, align) {
+                context.font = typeof size !== "undefined" ? size.toString() + "px sans-serif" : "10px sans-serif";
+                context.textAlign = typeof align !== "undefined" ? align : "left";
+                context.fillStyle = typeof color !== 'undefined' ? color : "white";
+                context.globalAlpha = typeof opacity !== 'undefined' ? opacity : 1;
+
+                context.strokeStyle = "black";
+                context.lineWidth = 0.5;
+                context.fillText(text, x, y);
+                context.strokeText(text, x, y);
+
+                context.globalAlpha = 1;
+                context.lineWidth = 2;
+            },
+
+            update: function () {
+
+                if (this.opacity > 0) {
+                    this.writeText(this.text, this.x, this.y - this.yOffset, "red", this.opacity, this.size, "center");
+                    if (this.counterPersistence < 20)
+                        this.yOffset += 0.5;
+
+                    if (this.persistence == false)
+                        this.opacity -= 0.03;
+
+                    if (this.counterPersistence == 80)
+                        this.persistence = false;
+
+                    console.log(this.counterPersistence);
+                    this.counterPersistence++;
+                }
+            },
+            reset: function () {
+                this.opacity = 1;
+                this.yOffset = 0;
+                this.x = 100;
+                this.y = 100;
+                this.counterPersistence = 0;
+                this.persistence = true;
+            }
+        },
+        rotate: {
+            name: "rotate",
+            pouet: 0,
+            shape: new Square(0, 0, 75),
+            update: function(){
+                context.save();
+                context.translate(150, 150);
+                context.rotate(this.pouet);
+                this.shape.draw(context);
+                context.restore();
+                this.pouet += 0.03;
+            },
+            reset: function(){
+
+            }
+        },
+        mapping:{
+            name: "mapping",
+            layerOne: new Image(),
+            layerTwo: new Image(),
+            update: function(){
+                for(var i = 0; i <= 50*50; i++){
+                    context.drawImage(this.layerOne,
+                            (this.map.layers[0].data[i]%32 - 1) * 16,
+                            ((this.map.layers[0].data[i] - (this.map.layers[0].data[i]%32))/32) * 16,
+                            16,
+                            16,
+                            (i%50) * 16,
+                            ((i-(i%50))/50) * 16,
+                            16,
+                            16);
+                }
+            },
+            reset: function(){
+                var xhr = new XMLHttpRequest();
+                xhr.onload = function(e){
+                    console.log("Map loaded");
+                    functions.mapping.map = JSON.parse(this.responseText);
+                    console.log((functions.mapping.map.layers[0].data[0]%32));
+                };
+                xhr.open("get", "./resources/map/untitled.json", true);
+                xhr.send();
+                this.layerOne.src = "./resources/graphic/Outside_A2.png";
+                this.layerTwo.src = "./resources/graphic/Dungeon_A4.png";
+            }
+        },
+        mappingTwo:{
+            name: "mappingTwo",
+            update: function(){
+                this.map.draw(0, 0);
+            },
+            reset: function(){
+                var xhr = new XMLHttpRequest();
+                xhr.onload = function(e){
+                    console.log("Map loaded");
+                    functions.mappingTwo.map = new Map(50, 50, 300, 300, 16, JSON.parse(this.responseText));
+                    console.log(functions.mappingTwo.map);
+                };
+                xhr.open("get", "./resources/map/untitled.json", true);
+                xhr.send();
             }
         }
     };

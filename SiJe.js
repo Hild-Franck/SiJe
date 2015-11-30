@@ -111,3 +111,31 @@ Rectangle.prototype.draw = function(context){
         context.fill();
     }
 };
+
+function Map(_width, _height, _wdthVw, _hgthVw, _tileDim, _map){
+    this.wdthVw = _wdthVw;
+    this.hgthVw = _hgthVw;
+    this.width = _width;
+    this.height = _height;
+    this.tileDim = _tileDim;
+    this.map = _map;
+    this.mapData = this.map.layers[0].data;
+    this.image = new Image();
+    this.image.src = "./resources/graphic/Outside_A2.png";
+}
+Map.prototype.draw = function(xStart, yStart){
+    for(var i = yStart; i < yStart + this.hgthVw; i+= this.tileDim){
+        for(var j = xStart; j < xStart + this.wdthVw; j += this.tileDim){
+            var coorMap = i/16 + j/16;
+            context.drawImage(this.image,
+                (this.mapData[coorMap]%32 - 1) * 16,
+                ((this.mapData[coorMap] - (this.mapData[coorMap]%32))/32) * 16,
+                16,
+                16,
+                j,
+                i,
+                16,
+                16);
+        }
+    }
+};
