@@ -142,3 +142,7 @@ input[type="checkbox"]:checked ~ .switch-button{
 #range{
     display: inline-block;
 }
+
+#variables{
+    text-align: center;
+}

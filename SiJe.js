@@ -132,8 +132,8 @@ Map.prototype.draw = function(xStart, yStart){
                 ((this.mapData[coorMap] - (this.mapData[coorMap]%32))/32) * 16,
                 16,
                 16,
-                j,
-                i,
+                j - xStart,
+                i - yStart,
                 16,
                 16);
         }

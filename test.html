@@ -272,8 +272,15 @@
         },
         mappingTwo:{
             name: "mappingTwo",
+            xOffSet: 0,
+            yOffSet: 0,
+            xStrt: 0,
+            yStrt: 0,
             update: function(){
-                this.map.draw(0, 0);
+                this.xStrt = this.xOffSet;
+                this.yStrt = this.yOffSet;
+                console.log(this.yStrt);
+                this.map.draw(this.xStrt, this.yStrt);
             },
             reset: function(){
                 var xhr = new XMLHttpRequest();
@@ -295,6 +302,24 @@
         button.addEventListener('click', function(){
             currFunct = functions[this.textContent.lowerCaseFrstLetr()];
             currFunct.reset();
+
+            for(varia in currFunct){
+                if(varia == "update")
+                    break;
+                if(varia != "name"){
+                    var range = document.createElement("input");
+                    range.type = "range";
+                    range.step = 16;
+                    range.id = varia;
+                    range.addEventListener('input', function(){
+                        currFunct[this.id] = parseInt(this.value);
+                        console.log("Pouet");
+                    });
+                    document.getElementById("variables").appendChild(range);
+                    document.getElementById("variables").appendChild(document.createElement("p")).appendChild(document.createTextNode(varia));
+                }
+            }
+
             console.log(currFunct);
         });
     }
