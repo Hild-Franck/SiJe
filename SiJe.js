@@ -126,7 +126,7 @@ function Map(_width, _height, _wdthVw, _hgthVw, _tileDim, _map){
 Map.prototype.draw = function(xStart, yStart){
     for(var i = yStart; i < yStart + this.hgthVw; i+= this.tileDim){
         for(var j = xStart; j < xStart + this.wdthVw; j += this.tileDim){
-            var coorMap = i/16 + j/16;
+            var coorMap = ((i/16)*50) + j/16;
             context.drawImage(this.image,
                 (this.mapData[coorMap]%32 - 1) * 16,
                 ((this.mapData[coorMap] - (this.mapData[coorMap]%32))/32) * 16,
