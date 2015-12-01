@@ -153,8 +153,10 @@
         },
         circle: {
             name: "circle",
-            shape: new Arc(canvasCenterX, canvasCenterY, 50, 0, Math.PI * 2, 'green', false, 10),
+            radius: 50,
+            shape: new Arc(canvasCenterX, canvasCenterY, this.radius, 0, Math.PI * 2, 'green', false, 10),
             update: function(){
+                this.shape.radius = this.radius;
                 this.shape.draw(context);
             },
             reset: function(){}
@@ -272,6 +274,18 @@
         },
         mappingTwo:{
             name: "mappingTwo",
+            config: {
+                xOffSet:{
+                    step: 16,
+                    min: 0,
+                    max: 640
+                },
+                yOffSet:{
+                    step: 16,
+                    min: 0,
+                    max: 640
+                }
+            },
             xOffSet: 0,
             yOffSet: 0,
             xStrt: 0,
@@ -302,21 +316,27 @@
         button.addEventListener('click', function(){
             currFunct = functions[this.textContent.lowerCaseFrstLetr()];
             currFunct.reset();
+            document.getElementById("variables").innerHTML = "";
 
             for(varia in currFunct){
                 if(varia == "update")
                     break;
-                if(varia != "name"){
+                if(varia != "name" && typeof currFunct[varia] != "object"){
                     var range = document.createElement("input");
                     range.type = "range";
-                    range.step = 16;
+                    if(currFunct.hasOwnProperty("config") && currFunct.config.hasOwnProperty(varia)) {
+                        range.step = currFunct.config[varia].step;
+                        range.min = currFunct.config[varia].min;
+                        range.max = currFunct.config[varia].max;
+                    }
                     range.id = varia;
+                    range.value = currFunct[varia];
                     range.addEventListener('input', function(){
                         currFunct[this.id] = parseInt(this.value);
                         console.log("Pouet");
                     });
-                    document.getElementById("variables").appendChild(range);
                     document.getElementById("variables").appendChild(document.createElement("p")).appendChild(document.createTextNode(varia));
+                    document.getElementById("variables").appendChild(range);
                 }
             }
 
